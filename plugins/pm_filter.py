@@ -609,6 +609,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
 
 async def auto_filter(client, msg, spoll=False):
+    print(True)
     if not spoll:
         message = msg
         settings = await get_settings(message.chat.id)
@@ -630,6 +631,7 @@ async def auto_filter(client, msg, spoll=False):
         message = msg.message.reply_to_message  # msg will be callback query
         search, files, offset, total_results = spoll
     pre = 'filep' if settings['file_secure'] else 'file'
+    print("DUlink")
     if settings["button"]:
         btn = [
             [
