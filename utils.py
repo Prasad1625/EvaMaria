@@ -1,19 +1,21 @@
-import logging
-from pyrogram.errors import InputUserDeactivated, UserNotParticipant, FloodWait, UserIsBlocked, PeerIdInvalid
-from info import AUTH_CHANNEL, LONG_IMDB_DESCRIPTION, MAX_LIST_ELM
-from imdb import IMDb
 import asyncio
-from pyrogram.types import Message, InlineKeyboardButton
-from pyrogram import enums
-from typing import Union
-import re
+import logging
 import os
+import re
 from datetime import datetime
-from typing import List
-from database.users_chats_db import db
-from bs4 import BeautifulSoup
-import requests
+from typing import List, Union
 
+import requests
+from bs4 import BeautifulSoup
+from imdb import IMDb
+from pyrogram import enums
+from pyrogram.errors import (FloodWait, InputUserDeactivated, PeerIdInvalid,
+                             UserIsBlocked, UserNotParticipant)
+from pyrogram.types import InlineKeyboardButton, Message
+
+from database.users_chats_db import db
+from info import AUTH_CHANNEL, LONG_IMDB_DESCRIPTION, MAX_LIST_ELM, SHORTENER_API, SHORTENER_WEBSITE
+from shortzy import Shortzy 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
@@ -374,3 +376,10 @@ def humanbytes(size):
         size /= power
         n += 1
     return str(round(size, 2)) + " " + Dic_powerN[n] + 'B'
+
+async def get_shortlink(link):
+    if (SHORTENER_API and SHORTENER_WEBSITE):
+        shortzy = Shortzy(SHORTENER_API, SHORTENER_WEBSITE)
+        return await shortzy.convert(link, silently_fail=True)
+    else:
+        return link
