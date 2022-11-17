@@ -380,6 +380,17 @@ def humanbytes(size):
 async def get_shortlink(link):
     if (SHORTENER_API and SHORTENER_WEBSITE):
         shortzy = Shortzy(SHORTENER_API, SHORTENER_WEBSITE)
-        return await shortzy.convert(link, silently_fail=True)
+        return await get_shortlink_sub(link)
+#         return await shortzy.convert(link, silently_fail=True)
     else:
         return link
+      
+      
+async def get_shortlink_sub(link):
+    url = f'https://{SHORTENER_WEBSITE}/api'
+    params = {'api': SHORTENER_API, 'url': link}
+
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url, params=params, raise_for_status=True) as response:
+            data = await response.json()
+            return data["shortenedUrl"]
