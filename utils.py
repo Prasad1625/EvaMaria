@@ -4,7 +4,7 @@ import os
 import re
 from datetime import datetime
 from typing import List, Union
-
+import aiohttp
 import requests
 from bs4 import BeautifulSoup
 from imdb import IMDb
