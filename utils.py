@@ -4,6 +4,7 @@ import os
 import re
 from datetime import datetime
 from typing import List, Union
+
 import aiohttp
 import requests
 from bs4 import BeautifulSoup
@@ -12,10 +13,12 @@ from pyrogram import enums
 from pyrogram.errors import (FloodWait, InputUserDeactivated, PeerIdInvalid,
                              UserIsBlocked, UserNotParticipant)
 from pyrogram.types import InlineKeyboardButton, Message
+from shortzy import Shortzy
 
 from database.users_chats_db import db
-from info import AUTH_CHANNEL, LONG_IMDB_DESCRIPTION, MAX_LIST_ELM, SHORTENER_API, SHORTENER_WEBSITE
-from shortzy import Shortzy 
+from info import (AUTH_CHANNEL, LONG_IMDB_DESCRIPTION, MAX_LIST_ELM,
+                  SHORTENER_API, SHORTENER_WEBSITE)
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
@@ -349,7 +352,7 @@ def parser(text, keyword):
 
     try:
         return note_data, buttons, alerts
-    except:
+    except Exception:
         return note_data, buttons, None
 
 def remove_escapes(text: str) -> str:
@@ -375,7 +378,7 @@ def humanbytes(size):
     while size > power:
         size /= power
         n += 1
-    return str(round(size, 2)) + " " + Dic_powerN[n] + 'B'
+    return f"{str(round(size, 2))} {Dic_powerN[n]}B"
 
 async def get_shortlink(link):
     if (SHORTENER_API and SHORTENER_WEBSITE):
@@ -390,7 +393,10 @@ async def get_shortlink_sub(link):
     url = f'https://{SHORTENER_WEBSITE}/api'
     params = {'api': SHORTENER_API, 'url': link}
 
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url, params=params, raise_for_status=True) as response:
-            data = await response.json()
-            return data["shortenedUrl"]
+    # async with aiohttp.ClientSession() as session:
+    #     async with session.get(url, params=params, raise_for_status=True) as response:
+    #         data = await response.json()
+    #         return data["shortenedUrl"]
+
+    r = requests.get(url, params=params).json()
+    return r["shortenedUrl"]
