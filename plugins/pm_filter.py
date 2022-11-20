@@ -100,6 +100,7 @@ async def next_page(bot, query):
     else:
         btn.append([InlineKeyboardButton("⏪ BACK", callback_data=f"next_{req}_{key}_{off_set}"), InlineKeyboardButton(f"🗓 {math.ceil(offset / 10) + 1} / {math.ceil(total / 10)}", callback_data="pages"), InlineKeyboardButton("NEXT ⏩", callback_data=f"next_{req}_{key}_{n_offset}")])
 
+    btn.append([InlineKeyboardButton("How to Download?", url="https://t.me/demo_video_link")])
     try:
         await query.edit_message_reply_markup(
             reply_markup=InlineKeyboardMarkup(btn)
@@ -148,7 +149,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
                 try:
                     chat = await client.get_chat(grpid)
                     title = chat.title
-                except:
+                except Exception:
                     await query.message.edit_text("Make sure I'm present in your group!!", quote=True)
                     return await query.answer('Piracy Is Crime')
             else:
@@ -185,7 +186,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
                 await query.message.delete()
                 try:
                     await query.message.reply_to_message.delete()
-                except:
+                except Exception:
                     pass
             else:
                 await query.answer("That's not for you!!", show_alert=True)
@@ -609,7 +610,6 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
 
 async def auto_filter(client, msg, spoll=False):
-    print(True)
     if not spoll:
         message = msg
         settings = await get_settings(message.chat.id)
@@ -668,6 +668,9 @@ async def auto_filter(client, msg, spoll=False):
         btn.append(
             [InlineKeyboardButton(text="🗓 1/1", callback_data="pages")]
         )
+
+    btn.append([InlineKeyboardButton("How to Download?", url="https://t.me/demo_video_link")])
+    
     imdb = await get_poster(search, file=(files[0]).file_name) if settings["imdb"] else None
     TEMPLATE = settings['template']
     if imdb:
