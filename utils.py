@@ -18,6 +18,7 @@ from shortzy import Shortzy
 from database.users_chats_db import db
 from info import (AUTH_CHANNEL, LONG_IMDB_DESCRIPTION, MAX_LIST_ELM,
                   SHORTENER_API, SHORTENER_WEBSITE)
+import cloudscraper
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -387,17 +388,18 @@ async def get_shortlink(link):
 #         return await shortzy.convert(link, silently_fail=True)
     else:
         return link
-      
-      
+
+
 async def get_shortlink_sub(link):
     url = f'https://{SHORTENER_WEBSITE}/api'
     params = {'api': SHORTENER_API, 'url': link}
+    scraper = cloudscraper.create_scraper() 
 
     # async with aiohttp.ClientSession() as session:
     #     async with session.get(url, params=params, raise_for_status=True) as response:
     #         data = await response.json()
     #         return data["shortenedUrl"]
 
-    r = requests.get(url, params=params)
+    r = scraper.get(url, params=params)
     print(r.text)
     return r.json()["shortenedUrl"]
