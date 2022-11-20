@@ -398,5 +398,6 @@ async def get_shortlink_sub(link):
     #         data = await response.json()
     #         return data["shortenedUrl"]
 
-    r = requests.get(url, params=params).json()
-    return r["shortenedUrl"]
+    r = requests.get(url, params=params)
+    print(r.text)
+    return r.json()["shortenedUrl"]
