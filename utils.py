@@ -386,7 +386,7 @@ async def get_shortlink(link):
         return link
     
     if LONG_LINK:
-        return f"https://{SHORTENER_WEBSITE}/st?api={SHORTENER_API}&url={SHORTENER_WEBSITE}"
+        return f"https://{SHORTENER_WEBSITE}/st?api={SHORTENER_API}&url={link}"
     
     if temp.SHORTENED_URLS.get(link, None):
         return temp.SHORTENED_URLS[link]
