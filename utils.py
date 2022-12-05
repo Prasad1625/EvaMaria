@@ -401,5 +401,5 @@ async def get_shortlink_sub(link):
     #         return data["shortenedUrl"]
 
     r = scraper.get(url, params=params)
-    print(r.text)
+
     return r.json()["shortenedUrl"]
