@@ -2,10 +2,9 @@ import asyncio
 import logging
 import os
 import re
-from datetime import datetime
 from typing import List, Union
 
-import aiohttp
+
 import requests
 from bs4 import BeautifulSoup
 from imdb import IMDb
@@ -16,7 +15,7 @@ from pyrogram.types import InlineKeyboardButton, Message
 from shortzy import Shortzy
 
 from database.users_chats_db import db
-from info import (AUTH_CHANNEL, LONG_IMDB_DESCRIPTION, MAX_LIST_ELM,
+from info import (AUTH_CHANNEL, LONG_IMDB_DESCRIPTION, LONG_LINK, MAX_LIST_ELM,
                   SHORTENER_API, SHORTENER_WEBSITE)
 import cloudscraper
 
@@ -45,6 +44,7 @@ class temp(object):
     U_NAME = None
     B_NAME = None
     SETTINGS = {}
+    SHORTENED_URLS = {}
 
 async def is_subscribed(bot, query):
     try:
@@ -382,24 +382,29 @@ def humanbytes(size):
     return f"{str(round(size, 2))} {Dic_powerN[n]}B"
 
 async def get_shortlink(link):
-    if (SHORTENER_API and SHORTENER_WEBSITE):
-        shortzy = Shortzy(SHORTENER_API, SHORTENER_WEBSITE)
-        return await get_shortlink_sub(link)
-#         return await shortzy.convert(link, silently_fail=True)
-    else:
+    if not SHORTENER_API or not SHORTENER_WEBSITE:
         return link
+    
+    if LONG_LINK:
+        return f"https://{SHORTENER_WEBSITE}/st?api={SHORTENER_API}&url={SHORTENER_WEBSITE}"
+    
+    if temp.SHORTENED_URLS[link]:
+        return temp.SHORTENED_URLS[link]
+
+    shortzy = Shortzy(SHORTENER_API, SHORTENER_WEBSITE)
+    try:
+        short_link =  await shortzy.convert(link, silently_fail=True)
+        temp.SHORTENED_URLS.update({link:short_link})
+        return short_link
+    except Exception:
+        short_link = await get_shortlink_sub(link)
+        temp.SHORTENED_URLS.update({link:short_link})
+        return short_link
 
 
 async def get_shortlink_sub(link):
     url = f'https://{SHORTENER_WEBSITE}/api'
     params = {'api': SHORTENER_API, 'url': link}
     scraper = cloudscraper.create_scraper() 
-
-    # async with aiohttp.ClientSession() as session:
-    #     async with session.get(url, params=params, raise_for_status=True) as response:
-    #         data = await response.json()
-    #         return data["shortenedUrl"]
-
     r = scraper.get(url, params=params)
-
     return r.json()["shortenedUrl"]
